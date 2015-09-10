@@ -24,22 +24,29 @@ public class CalcSequence {
    ArrayList<Integer> IDsUsed;
    boolean knowIDs = false;
    ArrayList<Integer> numbersUsed;
-   boolean knowNumbers;
+   boolean knowNumbers = false;
+   int size;
+   boolean knowSize = false;
    
    public CalcSequence(){
        IDsUsed = new ArrayList<>();
+       numbersUsed = new ArrayList<>();
    }
-   public CalcSequence(double v)
+   public CalcSequence(int v)
    {
        this();
        value = v;
        singular = true;
        valueCalced = true;
        knowIDs = true;
+       size = 1;
+       knowSize = true;
+       numbersUsed.add(v);
+       knowNumbers = true;
        
    }
    
-   public CalcSequence(double v, int n){
+   public CalcSequence(int v, int n){
        this(v);
        ID = n;
        IDsUsed.add(n);
@@ -65,7 +72,7 @@ public class CalcSequence {
        if(op!='*')
            onlyMult = false;
        
-       numbersUsed = new ArrayList<>();
+       
        
    }
    public CalcSequence(CalcSequence seq1, CalcSequence seq2, char op, double value)
@@ -106,6 +113,16 @@ public class CalcSequence {
        return IDsUsed;
    }
    
+   public ArrayList<Integer> getNumbersUsed(){
+       if(knowNumbers){
+           return numbersUsed;
+       }
+       
+       Util.merge(seq1.getNumbersUsed(),seq2.getNumbersUsed(),numbersUsed);
+       knowNumbers = true;
+       return numbersUsed;
+   }
+   
    public CalcSequence add(CalcSequence seq){
        return new CalcSequence(this,seq,'+',seq.total()+total());
    }
@@ -117,6 +134,19 @@ public class CalcSequence {
    }
    public CalcSequence multiply(CalcSequence seq){
        return new CalcSequence(this,seq,'*',total()*seq.total());
+   }
+   public int getSize(){
+        
+       if(knowSize)
+           return size;
+       
+       if(singular)
+           return 1;
+       
+       
+       size = seq1.getSize() + seq2.getSize();
+       knowSize = true;
+       return size;
    }
    public String toString(){
        if(singular){
@@ -139,7 +169,7 @@ public class CalcSequence {
                return seq1String+seq2String;
        }
        
-       if((operator == '/')||(operator == '/'))
+       if((operator == '/')||(operator == '-'))
            return seq1String+" "+operator+" "+seq2String;
        
        return seq2String+" "+operator+" "+seq1String;

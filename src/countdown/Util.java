@@ -6,6 +6,7 @@
 package countdown;
 
 import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -50,10 +51,65 @@ public class Util {
                     i2done = true;
                 
                 }
+            }    
+        }  
+    }
+        
+    public static boolean noneShared(ArrayList<Integer> list1, ArrayList<Integer> list2){
+        
+        for(int i=0; i<list1.size(); i++){
+            for(int j=0; j<list2.size(); j++){
+                if(list1.get(i)==list2.get(j))
+                    return false;
             }
-            
+        }
+        return true;
+        
+    }
+    public static boolean unorderedEqual(ArrayList<Integer> list1, ArrayList<Integer> list2){
+        
+        int list1Size = list1.size();
+        int list2Size = list2.size();
+        
+         if(list1Size!=list2Size)
+            return false;
+         
+        ArrayList<Integer> tempList = new ArrayList<>();
+        for(int i=0; i<list1Size; i++)
+            tempList.add(list1.get(i));
+        
+        for(int i=0; i<list2Size; i++){
+            for(int j = 0; j<tempList.size(); j++){
+                if(list2.get(i)==tempList.get(j)){
+                    tempList.remove(j);
+                    break;
+                }
+                if(j==tempList.size()-1){
+                    return false;
+                }
+                
+            }
         }
         
         
+        return true;
+    }
+    public static DefaultTableModel genTableModelFromCalcList(ArrayList<CalcSequence> list,String[] columnNames){
+        ArrayList<String[]> rows = new ArrayList<>();
+        for(CalcSequence seq: list){
+            String[] tempArray = {seq.toString(),Double.toString(seq.getSize()),seq.getNumbersUsed().toString(),Double.toString(seq.total())};
+            rows.add(tempArray);
+        }
+        Object[][] data = new Object[rows.size()][list.size()];
+        for(int i = 0; i<rows.size(); i++){
+            data[i] = rows.get(i);
+        }
+        return new DefaultTableModel(data,columnNames){
+
+             @Override
+             public boolean isCellEditable(int rowIndex, int columnIndex) {
+             return false;
+            }
+        };
     }
 }
